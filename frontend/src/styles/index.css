@@ -1,0 +1,68 @@
+:root {
+  /* Palette */
+  --color-ivory: #f6f2e9;
+  --color-ivory-deep: #efe9db;
+  --color-soil: #d8c5a5;
+  --color-root: #5d3827;
+  --color-charcoal: #26251f;
+  --color-forest: #22362a;
+  --color-sage: #8fa37e;
+  --color-sage-soft: #c3cfb4;
+  --color-olive: #6e7b4f;
+  --color-coral: #d9603b;
+
+  /* Type */
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-ivory);
+  color: var(--color-charcoal);
+  font-family: var(--font-body);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  margin: 0;
+  color: var(--color-forest);
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-olive);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

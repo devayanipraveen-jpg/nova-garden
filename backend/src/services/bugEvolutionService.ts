@@ -1,0 +1,3 @@
+import { prisma } from "../utils/prismaClient";
+export const evolution = (status: string) => ({ SEED: "SEED", OPEN: "OPEN", IN_PROGRESS: "SPREAD", SPREAD: "SPREAD", CRITICAL: "CRITICAL", RESOLVED: "RESOLVED", PREVENTED: "PREVENTED", CLOSED: "RESOLVED" }[status] ?? "OPEN");
+export async function getEvolution(issueId: string) { const issue = await prisma.issue.findUnique({ where: { id: issueId }, include: { history: { orderBy: { createdAt: "asc" } } } }); if (!issue) throw new Error("Issue not found"); return { current: evolution(issue.status), history: issue.history.map((h) => ({ ...h, state: h.field === "status" ? evolution(h.newValue ?? "OPEN") : null })) }; }
