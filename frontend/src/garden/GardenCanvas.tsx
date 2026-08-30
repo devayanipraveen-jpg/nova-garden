@@ -143,9 +143,9 @@ export default function GardenCanvas({ garden, onPlantProject }: Props) {
   const selected = garden?.modules.find((m) => m.moduleId === selectedId) ?? null;
 
   return (
-    <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-start" }}>
-      <div style={{ position: "relative", width: "100%", maxWidth: 900 }}>
-      <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} width="100%" role="img" aria-label="Codebase garden">
+    <div className="garden-canvas-shell" style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-start" }}>
+      <div className={`garden-canvas-stage${garden ? " garden-canvas-stage--populated" : ""}`}>
+      <svg className="garden-canvas" viewBox={`0 0 ${WIDTH} ${HEIGHT}`} width="100%" role="img" aria-label="Codebase garden">
         <rect x={0} y={0} width={WIDTH} height={HEIGHT} fill="var(--color-ivory)" />
         <rect x={0} y={SOIL_Y} width={WIDTH} height={HEIGHT - SOIL_Y} fill="var(--color-soil)" />
 
@@ -192,10 +192,10 @@ export default function GardenCanvas({ garden, onPlantProject }: Props) {
         })}
       </svg>
       {!garden && onPlantProject && (
-        <div style={{ position: "absolute", top: "16%", left: "50%", transform: "translateX(-50%)", width: "min(480px, 82%)", textAlign: "center", padding: "20px 24px", background: "rgba(255, 255, 255, 0.9)", border: "1px dashed var(--color-sage)", borderRadius: 8 }}>
-          <h2 style={{ fontSize: 25, marginBottom: 7 }}>Your Garden is waiting for a project</h2>
-          <p style={{ margin: "0 0 14px", fontSize: 13, lineHeight: 1.5, color: "#514f45" }}>Plant a ZIP, a project folder, or a public GitHub repository to grow this garden from real analysis.</p>
-          <button onClick={onPlantProject} style={{ padding: "9px 16px", borderRadius: 8, border: "none", background: "var(--color-forest)", color: "var(--color-ivory)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Plant Your Project</button>
+        <div className="garden-canvas__empty-panel">
+          <h2>Your Garden is waiting for a project</h2>
+          <p>Plant a ZIP, a project folder, or a public GitHub repository to grow this garden from real analysis.</p>
+          <button onClick={onPlantProject}>Plant Your Project</button>
         </div>
       )}
       </div>

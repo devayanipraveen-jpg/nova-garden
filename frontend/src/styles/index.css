@@ -54,6 +54,69 @@ button {
   cursor: pointer;
 }
 
+.garden-canvas-shell {
+  width: 100%;
+}
+
+.garden-canvas-stage {
+  position: relative;
+  width: 100%;
+  min-height: clamp(420px, 52vw, 620px);
+}
+
+.garden-canvas-stage--populated {
+  flex: 2 1 560px;
+  min-height: 0;
+}
+
+.garden-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.garden-canvas-stage:not(.garden-canvas-stage--populated) .garden-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.garden-canvas__empty-panel {
+  position: absolute;
+  top: 16%;
+  left: 50%;
+  width: min(620px, calc(100% - 48px));
+  padding: 34px 40px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px dashed var(--color-sage);
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(34, 54, 42, 0.1);
+  transform: translateX(-50%);
+}
+
+.garden-canvas__empty-panel h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.garden-canvas__empty-panel p {
+  max-width: 490px;
+  margin: 0 auto 22px;
+  color: #514f45;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.garden-canvas__empty-panel button {
+  padding: 11px 20px;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-forest);
+  color: var(--color-ivory);
+  font-size: 14px;
+  font-weight: 600;
+}
+
 :focus-visible {
   outline: 2px solid var(--color-olive);
   outline-offset: 2px;
@@ -64,5 +127,21 @@ button {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .garden-canvas-stage {
+    min-height: 430px;
+  }
+
+  .garden-canvas__empty-panel {
+    top: 12%;
+    width: calc(100% - 32px);
+    padding: 24px 20px;
+  }
+
+  .garden-canvas__empty-panel h2 {
+    font-size: 26px;
   }
 }
