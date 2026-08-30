@@ -190,12 +190,19 @@ export default function ScrollStory() {
   return (
     <div ref={containerRef} className="scroll-stage">
       <svg viewBox="0 0 1200 700" className="stage-svg" role="img" aria-label="Animated illustration of a codebase garden responding to a bug being found, understood, and resolved">
+        <defs>
+          <linearGradient id="landing-soil-gradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#E4D4B9" />
+            <stop offset="32%" stopColor="#D4B98E" />
+            <stop offset="100%" stopColor="#A97850" />
+          </linearGradient>
+        </defs>
         <rect x={0} y={0} width={1200} height={700} fill="var(--color-ivory)" />
         <rect className="season-tint" x={0} y={0} width={1200} height={700} fill="#6E9B5C" />
 
         <g className="world">
           {/* ---- Surface (0–560) ---- */}
-          <rect x={0} y={560} width={1200} height={140} fill="var(--color-soil)" />
+          <rect x={0} y={560} width={1200} height={140} fill="url(#landing-soil-gradient)" />
 
           {/* Underground root network, drawn once, revealed via opacity + the camera dip */}
           <g className="roots-layer">

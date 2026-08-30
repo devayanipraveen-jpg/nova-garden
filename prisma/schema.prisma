@@ -1,0 +1,297 @@
+// NOVA Garden — Prisma schema (vertical slice)
+//
+// Uses SQLite by default so the project runs instantly with zero external
+// services (`npx prisma migrate dev` just creates a local .db file).
+// To use Postgres instead: set `provider = "postgresql"` below and point
+// DATABASE_URL in .env at a real Postgres instance — no other code changes
+// are required, Prisma's query API is identical.
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  memberships    ProjectMember[]
+  reportedIssues Issue[]         @relation("Reporter")
+  assignedIssues Issue[]         @relation("Assignee")
+  issueHistory   IssueHistory[]
+  developerProfile DeveloperProfile?
+  comments IssueComment[]
+  notifications Notification[]
+  activities Activity[]
+}
+
+model Project {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  repositoryUrl String?
+  createdAt     DateTime @default(now())
+
+  members ProjectMember[]
+  modules Module[]
+  issues  Issue[]
+  riskAssessments RiskAssessment[]
+  simulations Simulation[]
+  memories CodebaseMemory[]
+  activities Activity[]
+  notifications Notification[]
+  healthSnapshots ProjectHealth[]
+}
+
+model ProjectMember {
+  id        String   @id @default(cuid())
+  role      String   @default("DEVELOPER")
+  joinedAt  DateTime @default(now())
+
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String
+  project   Project @relation(fields: [projectId], references: [id])
+  projectId String
+
+  @@unique([userId, projectId])
+}
+
+model Module {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  project   Project @relation(fields: [projectId], references: [id])
+  projectId String
+
+  issues Issue[]
+  originAutopsies BugAutopsy[] @relation("AutopsyOrigin")
+  riskAssessments RiskAssessment[]
+
+  // self-relation: which modules this module depends on
+  dependsOn    ModuleDependency[] @relation("DependentModule")
+  dependedOnBy ModuleDependency[] @relation("DependencyModule")
+
+  @@unique([projectId, name])
+}
+
+model ModuleDependency {
+  id String @id @default(cuid())
+
+  dependentModule   Module @relation("DependentModule", fields: [dependentModuleId], references: [id])
+  dependentModuleId String
+
+  dependencyModule   Module @relation("DependencyModule", fields: [dependencyModuleId], references: [id])
+  dependencyModuleId String
+
+  @@unique([dependentModuleId, dependencyModuleId])
+}
+
+model Issue {
+  id          String      @id @default(cuid())
+  title       String
+  description String
+  status      String @default("OPEN")
+  severity    String @default("MEDIUM")
+  priority    String @default("MEDIUM")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  resolvedAt  DateTime?
+
+  project   Project @relation(fields: [projectId], references: [id])
+  projectId String
+
+  module   Module @relation(fields: [moduleId], references: [id])
+  moduleId String
+
+  reporter   User   @relation("Reporter", fields: [reporterId], references: [id])
+  reporterId String
+
+  assignee   User?   @relation("Assignee", fields: [assigneeId], references: [id])
+  assigneeId String?
+
+  history IssueHistory[]
+  comments IssueComment[]
+  sourceRelations IssueRelation[] @relation("SourceIssue")
+  targetRelations IssueRelation[] @relation("TargetIssue")
+  analysis BugAnalysis?
+  autopsy BugAutopsy?
+  preventions BugPrevention[]
+  memories CodebaseMemory[]
+  simulations Simulation[]
+  riskAssessments RiskAssessment[]
+}
+
+model IssueComment {
+  id String @id @default(cuid())
+  body String
+  createdAt DateTime @default(now())
+  issue Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  issueId String
+  author User @relation(fields: [authorId], references: [id])
+  authorId String
+}
+
+model IssueRelation {
+  id String @id @default(cuid())
+  type String @default("SIMILAR")
+  score Float @default(0)
+  reason String
+  sourceIssue Issue @relation("SourceIssue", fields: [sourceIssueId], references: [id], onDelete: Cascade)
+  sourceIssueId String
+  targetIssue Issue @relation("TargetIssue", fields: [targetIssueId], references: [id], onDelete: Cascade)
+  targetIssueId String
+  @@unique([sourceIssueId, targetIssueId, type])
+}
+
+model BugAnalysis {
+  id String @id @default(cuid())
+  rootCause String
+  confidence Float
+  evidence String
+  affectedDependencies String
+  createdAt DateTime @default(now())
+  issue Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  issueId String @unique
+}
+
+model BugAutopsy {
+  id String @id @default(cuid())
+  causeOfFailure String
+  affectedModules String
+  whyItSurvived String
+  resolution String
+  preventionRecommendation String
+  timeActiveHours Float
+  createdAt DateTime @default(now())
+  issue Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  issueId String @unique
+  originModule Module @relation("AutopsyOrigin", fields: [originModuleId], references: [id])
+  originModuleId String
+}
+
+model BugPrevention {
+  id String @id @default(cuid())
+  action String
+  status String @default("PENDING")
+  completedAt DateTime?
+  createdAt DateTime @default(now())
+  issue Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  issueId String
+}
+
+model DeveloperProfile {
+  id String @id @default(cuid())
+  skills String
+  modulesWorkedOn String
+  currentWorkload Int @default(0)
+  resolutionCount Int @default(0)
+  averageResolutionHours Float @default(0)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+}
+
+model RiskAssessment {
+  id String @id @default(cuid())
+  score Int
+  level String
+  reasons String
+  createdAt DateTime @default(now())
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  issue Issue? @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  issueId String?
+  module Module? @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  moduleId String?
+}
+
+model Simulation {
+  id String @id @default(cuid())
+  durationDays Int
+  projectedRisk Int
+  createdAt DateTime @default(now())
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  issue Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  issueId String
+  results SimulationResult[]
+}
+
+model SimulationResult {
+  id String @id @default(cuid())
+  moduleId String
+  moduleName String
+  hop Int
+  projectedRisk Int
+  path String
+  simulation Simulation @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+  simulationId String
+}
+
+model CodebaseMemory {
+  id String @id @default(cuid())
+  previousCause String
+  previousSolution String
+  previousPrevention String
+  resolutionDate DateTime
+  similarity Float
+  createdAt DateTime @default(now())
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  issue Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  issueId String
+}
+
+model Notification {
+  id String @id @default(cuid())
+  title String
+  body String
+  read Boolean @default(false)
+  createdAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String?
+}
+
+model Activity {
+  id String @id @default(cuid())
+  type String
+  message String
+  metadata String?
+  createdAt DateTime @default(now())
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId String?
+}
+
+model ProjectHealth {
+  id String @id @default(cuid())
+  score Int
+  metrics String
+  createdAt DateTime @default(now())
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+}
+
+model IssueHistory {
+  id        String   @id @default(cuid())
+  field     String
+  oldValue  String?
+  newValue  String?
+  createdAt DateTime @default(now())
+
+  issue   Issue  @relation(fields: [issueId], references: [id])
+  issueId String
+
+  changedBy   User   @relation(fields: [changedById], references: [id])
+  changedById String
+}

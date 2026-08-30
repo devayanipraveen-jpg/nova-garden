@@ -7,6 +7,7 @@ export default function LandingPage() {
   const navigate = useNavigate();
   const closingRef = useRef<HTMLDivElement>(null);
   const [showNavCta, setShowNavCta] = useState(true);
+  const [isEnteringGarden, setIsEnteringGarden] = useState(false);
 
   useEffect(() => {
     const closingSection = closingRef.current;
@@ -21,20 +22,30 @@ export default function LandingPage() {
 
   function enterGarden(event: React.MouseEvent<HTMLAnchorElement>) {
     event.preventDefault();
-    const viewTransitionDocument = document as Document & {
-      startViewTransition?: (callback: () => void) => void;
-    };
-
-    if (viewTransitionDocument.startViewTransition) {
-      viewTransitionDocument.startViewTransition(() => navigate("/garden"));
-      return;
-    }
-
-    navigate("/garden");
+    if (!isEnteringGarden) setIsEnteringGarden(true);
   }
 
   return (
     <div>
+      {isEnteringGarden && (
+        <div
+          className="flower-transition"
+          aria-label="Entering Nova garden"
+          onAnimationEnd={(event) => {
+            if (event.target === event.currentTarget) navigate("/garden");
+          }}
+        >
+          <div className="flower-transition__bloom" aria-hidden="true">
+            <span className="flower-transition__petal" />
+            <span className="flower-transition__petal" />
+            <span className="flower-transition__petal" />
+            <span className="flower-transition__petal" />
+            <span className="flower-transition__petal" />
+            <span className="flower-transition__petal" />
+            <span className="flower-transition__center" />
+          </div>
+        </div>
+      )}
       <nav className="landing-nav">
         <span className="landing-nav__brand"><strong>NOVA</strong> <em>garden</em></span>
         {showNavCta && (

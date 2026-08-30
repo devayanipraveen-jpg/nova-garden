@@ -14,6 +14,75 @@
   animation: 360ms ease-out both nova-page-enter;
 }
 
+.flower-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  pointer-events: all;
+  animation: flower-transition-hold 1800ms linear both;
+}
+
+.flower-transition__bloom {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  filter: drop-shadow(0 12px 14px rgba(88, 48, 37, 0.28));
+  transform: rotate(-16deg) scale(0.42);
+  animation: flower-transition-bloom 1800ms cubic-bezier(0.18, 0.72, 0.2, 1) both;
+}
+
+.flower-transition__petal {
+  position: absolute;
+  top: 22px;
+  left: 80px;
+  width: 100px;
+  height: 160px;
+  border-radius: 62% 38% 60% 40%;
+  background:
+    radial-gradient(circle at 28% 32%, rgba(255, 221, 194, 0.5) 0 4%, transparent 5%),
+    radial-gradient(circle at 72% 68%, rgba(161, 49, 80, 0.2) 0 5%, transparent 6%),
+    linear-gradient(135deg, #f56d8a 0%, #e84370 52%, #bb2f5c 100%);
+  box-shadow: inset 12px 10px 18px rgba(255, 203, 183, 0.28), inset -15px -14px 20px rgba(124, 26, 53, 0.25), 2px 5px 10px rgba(102, 34, 51, 0.24);
+  transform-origin: 50% 108px;
+}
+
+.flower-transition__petal:nth-child(1) { transform: rotate(0deg); }
+.flower-transition__petal:nth-child(2) { transform: rotate(60deg); }
+.flower-transition__petal:nth-child(3) { transform: rotate(120deg); }
+.flower-transition__petal:nth-child(4) { transform: rotate(180deg); }
+.flower-transition__petal:nth-child(5) { transform: rotate(240deg); }
+.flower-transition__petal:nth-child(6) { transform: rotate(300deg); }
+
+.flower-transition__center {
+  position: absolute;
+  top: 91px;
+  left: 91px;
+  z-index: 1;
+  width: 78px;
+  height: 78px;
+  border: 4px solid #e9a158;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 28% 30%, #f9d99b 0 4%, transparent 5%),
+    radial-gradient(circle at 65% 58%, #e9964e 0 6%, transparent 7%),
+    radial-gradient(circle at 46% 74%, #f8c878 0 5%, transparent 6%),
+    #f6ca87;
+  box-shadow: inset 8px 8px 10px rgba(255, 242, 190, 0.5), inset -8px -8px 12px rgba(191, 104, 51, 0.25), 0 4px 10px rgba(107, 58, 32, 0.22);
+}
+
+@keyframes flower-transition-bloom {
+  0% { transform: rotate(-16deg) scale(0.42); }
+  24% { transform: rotate(110deg) scale(0.42); }
+  100% { transform: rotate(720deg) scale(15); }
+}
+
+@keyframes flower-transition-hold {
+  to { opacity: 1; }
+}
+
 @keyframes nova-page-leave {
   to {
     opacity: 0;

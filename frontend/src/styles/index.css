@@ -82,15 +82,11 @@ button {
 
 .garden-canvas__empty-panel {
   position: absolute;
-  top: 16%;
+  top: 12%;
   left: 50%;
-  width: min(620px, calc(100% - 48px));
-  padding: 34px 40px;
+  width: min(560px, calc(100% - 48px));
+  padding: 0;
   text-align: center;
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px dashed var(--color-sage);
-  border-radius: 8px;
-  box-shadow: 0 12px 30px rgba(34, 54, 42, 0.1);
   transform: translateX(-50%);
 }
 
@@ -138,7 +134,6 @@ button {
   .garden-canvas__empty-panel {
     top: 12%;
     width: calc(100% - 32px);
-    padding: 24px 20px;
   }
 
   .garden-canvas__empty-panel h2 {

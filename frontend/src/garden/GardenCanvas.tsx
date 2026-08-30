@@ -6,9 +6,45 @@ const WIDTH = 900;
 const HEIGHT = 570;
 const SOIL_Y = HEIGHT - 140;
 
+const EMPTY_GARDEN_BUGS = [
+  { x: 106, y: 108, rotation: -20, color: "coral", scale: 0.8 },
+  { x: 238, y: 190, rotation: 34, color: "gold", scale: 0.72 },
+  { x: 706, y: 118, rotation: 22, color: "moss", scale: 0.78 },
+  { x: 806, y: 250, rotation: -38, color: "slate", scale: 0.7 },
+  { x: 122, y: 338, rotation: 30, color: "moss", scale: 0.68 },
+  { x: 742, y: 362, rotation: -16, color: "coral", scale: 0.76 },
+  { x: 292, y: 388, rotation: -28, color: "gold", scale: 0.64 },
+] as const;
+
 interface Props {
   garden: GardenView | null;
   onPlantProject?: () => void;
+}
+
+function GardenBug({
+  x,
+  y,
+  rotation,
+  color,
+  scale,
+}: (typeof EMPTY_GARDEN_BUGS)[number]) {
+  const shellFill = `url(#garden-bug-${color})`;
+  const spotFill = color === "gold" ? "#70402A" : "#2C2923";
+
+  return (
+    <g transform={`translate(${x} ${y}) rotate(${rotation}) scale(${scale})`} opacity={0.88} aria-hidden="true">
+      <path d="M -10 -3 L -19 -10 M -10 3 L -19 10 M 10 -3 L 19 -10 M 10 3 L 19 10" stroke="#302820" strokeWidth={2.2} strokeLinecap="round" />
+      <path d="M 10 -4 Q 17 -14 24 -12 M 10 4 Q 17 14 24 12" fill="none" stroke="#302820" strokeWidth={1.8} strokeLinecap="round" />
+      <ellipse cx={-5} cy={0} rx={15} ry={12} fill={shellFill} stroke="#302820" strokeWidth={2.4} />
+      <path d="M -5 -10 Q -1 0 -5 10" fill="none" stroke="rgba(74, 40, 29, 0.55)" strokeWidth={1.5} />
+      <circle cx={-10} cy={-4} r={2.3} fill={spotFill} />
+      <circle cx={-2} cy={5} r={2.1} fill={spotFill} />
+      <circle cx={1} cy={-5} r={1.8} fill={spotFill} />
+      <ellipse cx={12} cy={0} rx={7} ry={8} fill="#C9874E" stroke="#302820" strokeWidth={2.2} />
+      <circle cx={14} cy={-3} r={1.6} fill="#FFF0B0" />
+      <path d="M 16 -6 Q 20 -15 26 -14 M 16 6 Q 20 15 26 14" fill="none" stroke="#302820" strokeWidth={1.6} strokeLinecap="round" />
+    </g>
+  );
 }
 
 function Plant({
@@ -146,8 +182,35 @@ export default function GardenCanvas({ garden, onPlantProject }: Props) {
     <div className="garden-canvas-shell" style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-start" }}>
       <div className={`garden-canvas-stage${garden ? " garden-canvas-stage--populated" : ""}`}>
       <svg className="garden-canvas" viewBox={`0 0 ${WIDTH} ${HEIGHT}`} width="100%" role="img" aria-label="Codebase garden">
+        <defs>
+          <linearGradient id="garden-soil-gradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#E4D4B9" />
+            <stop offset="32%" stopColor="#D4B98E" />
+            <stop offset="100%" stopColor="#A97850" />
+          </linearGradient>
+          <linearGradient id="garden-bug-coral" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#F37875" />
+            <stop offset="58%" stopColor="#D94D48" />
+            <stop offset="100%" stopColor="#9F3432" />
+          </linearGradient>
+          <linearGradient id="garden-bug-gold" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#F5CF69" />
+            <stop offset="58%" stopColor="#D99A3F" />
+            <stop offset="100%" stopColor="#A9652D" />
+          </linearGradient>
+          <linearGradient id="garden-bug-moss" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#8EAA75" />
+            <stop offset="58%" stopColor="#5F805F" />
+            <stop offset="100%" stopColor="#3E5944" />
+          </linearGradient>
+          <linearGradient id="garden-bug-slate" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#B7B2A8" />
+            <stop offset="58%" stopColor="#817C72" />
+            <stop offset="100%" stopColor="#57544D" />
+          </linearGradient>
+        </defs>
         <rect x={0} y={0} width={WIDTH} height={HEIGHT} fill="var(--color-ivory)" />
-        <rect x={0} y={SOIL_Y} width={WIDTH} height={HEIGHT - SOIL_Y} fill="var(--color-soil)" />
+        <rect x={0} y={SOIL_Y} width={WIDTH} height={HEIGHT - SOIL_Y} fill="url(#garden-soil-gradient)" />
 
         {/* Roots: dependency edges, illuminated (more visible) when either end is unhealthy */}
         <g style={{ opacity: hasGrown ? 1 : 0, transition: "opacity 700ms ease 350ms" }}>
@@ -190,6 +253,18 @@ export default function GardenCanvas({ garden, onPlantProject }: Props) {
             </g>
           );
         })}
+        {!garden && (
+          <g>
+            {EMPTY_GARDEN_BUGS.map((bug, index) => <GardenBug key={index} {...bug} />)}
+            <ellipse cx={WIDTH / 2} cy={SOIL_Y + 18} rx={88} ry={12} fill="#B99C77" opacity={0.35} />
+            <path d={`M ${WIDTH / 2 - 54} ${SOIL_Y - 80} L ${WIDTH / 2 + 54} ${SOIL_Y - 80} L ${WIDTH / 2 + 38} ${SOIL_Y + 4} L ${WIDTH / 2 - 38} ${SOIL_Y + 4} Z`} fill="#C97752" stroke="var(--color-root)" strokeWidth={4} strokeLinejoin="round" />
+            <ellipse cx={WIDTH / 2} cy={SOIL_Y - 80} rx={58} ry={13} fill="#D98B63" stroke="var(--color-root)" strokeWidth={4} />
+            <ellipse cx={WIDTH / 2} cy={SOIL_Y - 80} rx={45} ry={8} fill="#5D3827" />
+            <path d={`M ${WIDTH / 2} ${SOIL_Y - 82} Q ${WIDTH / 2 - 4} ${SOIL_Y - 116} ${WIDTH / 2} ${SOIL_Y - 142}`} stroke="var(--color-forest)" strokeWidth={5} fill="none" strokeLinecap="round" />
+            <ellipse cx={WIDTH / 2 - 14} cy={SOIL_Y - 123} rx={16} ry={8} fill="var(--color-sage)" transform={`rotate(-28 ${WIDTH / 2 - 14} ${SOIL_Y - 123})`} />
+            <ellipse cx={WIDTH / 2 + 15} cy={SOIL_Y - 139} rx={16} ry={8} fill="var(--color-sage)" transform={`rotate(28 ${WIDTH / 2 + 15} ${SOIL_Y - 139})`} />
+          </g>
+        )}
       </svg>
       {!garden && onPlantProject && (
         <div className="garden-canvas__empty-panel">
