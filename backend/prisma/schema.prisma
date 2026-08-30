@@ -7,7 +7,7 @@
 // are required, Prisma's query API is identical.
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
