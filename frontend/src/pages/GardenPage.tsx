@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchGarden, GardenView } from "../api/gardenApi";
-import GardenCanvas from "../garden/GardenCanvas";
+import GardenCanvas, { GardenBug } from "../garden/GardenCanvas";
 import { Link, useSearchParams } from "react-router-dom";
 import { listIssues, Issue } from "../api/issueApi";
 import * as intelligence from "../api/intelligenceApi";
@@ -106,7 +106,7 @@ export default function GardenPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--color-ivory)", padding: "32px 40px" }}>
+    <div className="garden-page" style={{ minHeight: "100vh", background: "var(--color-ivory)", padding: "32px 40px" }}>
       <header
         style={{
           position: "relative",
@@ -224,7 +224,22 @@ export default function GardenPage() {
 
       <GardenCanvas garden={garden} onPlantProject={() => setIsPlantModalOpen(true)} />
 
-      <section style={{ marginTop: 32 }}>
+      <section className={!hasProject ? "garden-dashboard garden-dashboard--empty" : "garden-dashboard"} style={{ marginTop: 32 }}>
+          {!hasProject && (
+            <svg className="garden-dashboard__bugs" viewBox="0 0 1000 820" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="dashboard-bug-coral" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#F37875" /><stop offset="58%" stopColor="#D94D48" /><stop offset="100%" stopColor="#9F3432" /></linearGradient>
+                <linearGradient id="dashboard-bug-gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#F5CF69" /><stop offset="58%" stopColor="#D99A3F" /><stop offset="100%" stopColor="#A9652D" /></linearGradient>
+                <linearGradient id="dashboard-bug-moss" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#8EAA75" /><stop offset="58%" stopColor="#5F805F" /><stop offset="100%" stopColor="#3E5944" /></linearGradient>
+                <linearGradient id="dashboard-bug-slate" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#B7B2A8" /><stop offset="58%" stopColor="#817C72" /><stop offset="100%" stopColor="#57544D" /></linearGradient>
+              </defs>
+              <GardenBug x={32} y={74} rotation={-18} color="coral" scale={0.62} gradientPrefix="dashboard-bug" />
+              <GardenBug x={954} y={225} rotation={28} color="moss" scale={0.58} gradientPrefix="dashboard-bug" />
+              <GardenBug x={58} y={420} rotation={-34} color="gold" scale={0.52} gradientPrefix="dashboard-bug" />
+              <GardenBug x={920} y={548} rotation={16} color="slate" scale={0.66} gradientPrefix="dashboard-bug" />
+              <GardenBug x={140} y={738} rotation={42} color="coral" scale={0.48} gradientPrefix="dashboard-bug" />
+            </svg>
+          )}
           {/* Top Intelligence Metrics */}
           <div
             style={{

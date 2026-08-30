@@ -113,6 +113,77 @@ button {
   font-weight: 600;
 }
 
+.garden-plant {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: garden-plant-sway 4.2s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.garden-plant:nth-of-type(2n) {
+  animation-duration: 5.1s;
+  animation-delay: -1.1s;
+}
+
+.garden-cloud {
+  transform-box: view-box;
+  transform-origin: center;
+}
+
+.garden-cloud--one {
+  animation: garden-cloud-drift 15s ease-in-out infinite alternate;
+}
+
+.garden-cloud--two {
+  animation: garden-cloud-drift 19s ease-in-out -6s infinite alternate-reverse;
+}
+
+.garden-pollen {
+  transform-box: view-box;
+  transform-origin: center;
+  animation: garden-pollen-drift 5.5s ease-in-out infinite alternate;
+}
+
+.garden-ambient-bug {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: garden-bug-bob 3.8s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes garden-plant-sway {
+  from { transform: rotate(-3deg); }
+  to { transform: rotate(3deg); }
+}
+
+@keyframes garden-cloud-drift {
+  from { transform: translateX(-34px); }
+  to { transform: translateX(42px); }
+}
+
+@keyframes garden-pollen-drift {
+  from { transform: translate(-16px, 16px); opacity: 0.45; }
+  to { transform: translate(20px, -18px); opacity: 1; }
+}
+
+@keyframes garden-bug-bob {
+  from { transform: translateY(-3px) rotate(-2deg); }
+  to { transform: translateY(4px) rotate(2deg); }
+}
+
+.garden-dashboard--empty {
+  position: relative;
+}
+
+.garden-dashboard__bugs {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
 :focus-visible {
   outline: 2px solid var(--color-olive);
   outline-offset: 2px;
@@ -127,6 +198,13 @@ button {
 }
 
 @media (max-width: 720px) {
+  .garden-page {
+    background:
+      linear-gradient(90deg, rgba(34, 54, 42, 0.55) 0%, rgba(34, 54, 42, 0.18) 9%, transparent 24%, transparent 76%, rgba(34, 54, 42, 0.18) 91%, rgba(34, 54, 42, 0.55) 100%),
+      var(--color-ivory) !important;
+    padding: 22px 16px !important;
+  }
+
   .garden-canvas-stage {
     min-height: 430px;
   }
